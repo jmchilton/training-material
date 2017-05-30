@@ -1,0 +1,140 @@
+---
+layout: tutorial_slides
+topic_name: "Dev-Corner"
+tutorial_name: conda
+logo: "GTN"
+---
+
+## Planemo
+
+These slides mirror the section on "Dependencies and Conda" in the [Planemo Documentation](http://planemo.readthedocs.io/en/latest/writing_advanced.html#dependencies-and-conda).
+
+---
+
+## Galaxy Dependencies
+
+---
+
+class: left
+
+### Example Tool (1 / 2)
+
+From Planemo docs - the following example builds a tool for the `seqtk seq` command.
+
+```
+$ planemo tool_init --force \
+                    --id 'seqtk_seq' \
+                    --name 'Convert to FASTA (seqtk)' \
+                    --requirement seqtk@1.2 \
+                    --example_command 'seqtk seq -a 2.fastq > 2.fasta' \
+                    --example_input 2.fastq \
+                    --example_output 2.fasta \
+                    --test_case \
+                    --cite_url 'https://github.com/lh3/seqtk' \
+                    --help_from_command 'seqtk seq'
+```
+
+Notice the `--requirement seqtk@1.2`. 
+
+---
+
+class: left
+
+### Example Tool (2 / 2)
+
+The `--requirement seqtk@1.2` gets translated into the follow tool XML:
+
+```
+<requirements>
+    <requirement type="package" version="1.2">seqtk</requirement>
+</requirements>
+```
+
+---
+
+### Dependency Resolution
+
+![](../images/galaxy_instance.png)
+
+???
+
+NEXT SLIDES STOLEN DIRECTLY FROM tool_integration.
+
+---
+
+![](../../shared/images/conda_logo.png)
+
+Package, dependency and environment management
+
+---
+
+.image-50[![](../../shared/images/conda_logo.png)]
+
+- Based on recipes describing how to install the software which are then built for their distribution
+- No compilation at installation: binaries with their dependencies, libraries...
+- Not restricted to Galaxy
+
+---
+
+###.image-25[![](../../shared/images/conda_logo.png)] <br/> Conda distributions
+
+```
+
+
+```
+![](../images/miniconda_vs_anaconda.png)
+
+---
+
+###.image-25[![](../../shared/images/conda_logo.png)] <br/> Channels
+
+- Packages through channels within Continuum.Anaconda
+- Conda channel searched by Galaxy for packages:
+    - iuc
+    - bioconda
+    - defaults
+    - r
+    - conda-forge
+
+---
+
+class: left
+
+Can check if the requirements on a tool are available in best practice Conda channels using a flag to `planemo lint` - just use `--conda_requirements`.
+
+```
+$ planemo lint --conda_requirements seqtk_seq.xml
+Linting tool /Users/john/workspace/planemo/docs/writing/seqtk_seq_v6.xml
+  ...
+Applying linter requirements_in_conda... CHECK
+.. INFO: Requirement [seqtk@1.2] matches target in best practice Conda channel [bioconda].
+```
+
+---
+
+### The Planemo `conda_install` command
+
+```
+$ planemo conda_install seqtk_seq.xml
+Install conda target CondaTarget[seqtk,version=1.2]
+/home/john/miniconda2/bin/conda create -y --name __seqtk@1.2 seqtk=1.2
+Fetching package metadata ...............
+Solving package specifications: ..........
+Package plan for installation in environment /home/john/miniconda2/envs/__seqtk@1.2:
+The following packages will be downloaded:
+    package                    |            build
+    ---------------------------|-----------------
+    seqtk-1.2                  |                0          29 KB  bioconda
+The following NEW packages will be INSTALLED:
+    seqtk: 1.2-0   bioconda
+    zlib:  1.2.8-3
+Fetching packages ...
+....
+#
+# To deactivate this environment, use:
+# > source deactivate __seqtk@1.2
+#
+$ which seqtk
+seqtk not found
+```
+
