@@ -237,6 +237,32 @@ material:
     - "Understand the workflow launching in Galaxy with BioBlend"
     - "Be able to adapt this knowledge to personal workflows"
 
+-
+    title: "Tool Dependencies and Conda"
+    type: "tutorial"
+    name: "conda"
+    zenodo_link: ""
+    galaxy_tour: ""
+    hands_on: "external"
+    hands_on_url: "http://planemo.readthedocs.io/en/latest/writing_standalone.html"
+    slides: "yes"
+
+    questions:
+    - "How can I connect tools to applications?"
+    - "What is Conda and BioConda?"
+
+    objectives:
+    - "Use Conda to enable tool dependency management in Galaxy"
+
+    time_estimation: "1.5h"
+
+    requirements:
+    -
+        title: "Tool development and integration into Galaxy"
+        type: "internal"
+        link: "/Dev-Corner/"  # TODO: More percise link?
+
+    key_points: []
 
 maintainers:
 -
@@ -257,6 +283,10 @@ contributors:
     name: "Bérénice Batut"
     github_username: "bebatut"
     email: ""
+-
+    name: "John Chilton"
+    github_username: "jmchilton"
+    email: "jmchilton@gmail.com"
 -
     name: "Gildas Le Corguillé"
     github_username: "lecorguille"
