@@ -237,6 +237,43 @@ material:
     - "Understand the workflow launching in Galaxy with BioBlend"
     - "Be able to adapt this knowledge to personal workflows"
 
+-
+    title: "Tool Dependencies and Conda"
+    type: "tutorial"
+    name: "conda"
+    zenodo_link: ""
+    galaxy_tour: ""
+    hands_on: "external"
+    hands_on_url: "http://planemo.readthedocs.io/en/latest/writing_standalone.html"
+    slides: "yes"
+
+    questions:
+    - "How can I connect tools to applications and libraries?"
+    - "What are the advantages of declaring dependencies for my tool?"
+    - "What are Conda and Bioconda?"
+    - "What are Conda recipes and environments?"
+    - "How do I find and use existing Conda recipes?"
+    - "How do I develop Conda recipes for use within Galaxy tools?"
+
+    objectives:
+    - "Use Conda to enable tool dependency management in Galaxy"
+
+    time_estimation: "1.25h"
+
+    requirements:
+    -
+        title: "Tool development and integration into Galaxy"
+        type: "internal"
+        link: "/Dev-Corner/"  # TODO: More percise link?
+
+    key_points:
+    - "Conda and Bioconda are Galaxy best practices for connecting Galaxy tools to underlying applications and libraries."
+    - "Leveraging Conda allows easy installation of your tool's dependencies by Galaxy deployers."
+    - "The Planemo commands `conda_search`, `conda_init`, `conda_install`, `lint`, `test`, and `serve` make it easy to search and use existing Conda recipes when developing tools."
+    - "Conda recipe skeletons, `conda build`, and with `planemo conda_install --conda_use_local` allow easy development of new Conda recipes at the same time as Galaxy tools that wrap them."
+    - "Bioconda is a Galaxy best practice Conda channel for recipe publication."
+    - "Bioconda has easy to follow contribution guidelines and is very welcoming to new contributors."
+
 
 maintainers:
 -
@@ -257,6 +294,10 @@ contributors:
     name: "Bérénice Batut"
     github_username: "bebatut"
     email: ""
+-
+    name: "John Chilton"
+    github_username: "jmchilton"
+    email: "jmchilton@gmail.com"
 -
     name: "Gildas Le Corguillé"
     github_username: "lecorguille"
