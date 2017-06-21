@@ -317,7 +317,7 @@ Many tools have multiple requirements, these need containers also!
 The BWA tool is an example of one such tool that has multiple requirements - because samtools is used to sort BAMs after mapping. The Planemo `conda_testing` project is distributed with a simple tool to simulate this containing both `bwa` and `samtools` requirements.
 
 .reduce90[```
-$ planemo project_init --project_template=conda_testing conda_testing
+$ planemo project_init --template=conda_testing conda_testing
 $ cd conda_testing/
 $ grep -r require bwa_and_samtools.xml
 bwa_and_samtools.xml:    <requirements>
