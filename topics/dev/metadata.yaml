@@ -246,11 +246,11 @@ material:
       - "What are Conda and Bioconda?"
       - "What are Conda recipes and environments?"
       - "How do I find and use existing Conda recipes?"
-      - "How do I develop Conda recipes for use within Galaxy tools?"
+      - "How do I develop Conda recipes for use within Galaxy or CWL tools?"
     objectives:
-      - "Learn to use existing Conda recipes to enable best practice tool dependency management in Galaxy."
+      - "Learn to use existing Conda recipes to enable best practice tool dependency management."
       - "Learn the basics of building Conda recipes and contributing to Bioconda."
-      - "Learn to use Planemo to assist in developing Galaxy tools from existing and new Conda recipes."
+      - "Learn to use Planemo to assist in developing tools from existing and new Conda recipes."
     time_estimation: "1.25h"
     requirements:
       -
@@ -282,9 +282,9 @@ material:
     hands_on_url: "http://planemo.readthedocs.io/en/latest/writing_standalone.html"
     slides: yes
     questions:
-      - "What are the advantages of running my Galaxy tool inside of a container?"
-      - "How does Galaxy find a container to run my tool in?"
-      - "What are BioContainers and how are they related to Galaxy?"
+      - "What are the advantages of running my tool inside of a container?"
+      - "How does Galaxy or a CWL runner find a container to run my tool in?"
+      - "What are BioContainers and how are they related to Galaxy and CWL?"
     objectives:
       - "Explore the differences between containerizing Galaxy and tool execution."
       - "Discuss the advantages of containerizing tools."

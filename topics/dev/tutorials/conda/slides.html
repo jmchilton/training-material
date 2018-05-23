@@ -7,7 +7,9 @@ logo: "GTN"
 
 ## Planemo
 
-These slides mirror the section on "Dependencies and Conda" in the [Planemo Documentation](https://planemo.readthedocs.io/en/latest/writing_advanced.html#dependencies-and-conda).
+These slides mirror the section on "Dependencies and Conda" in the Planemo documentation,
+there are two versions of the that documentation - one for [Galaxy XML tools](https://planemo.readthedocs.io/en/latest/writing_advanced.html#dependencies-and-conda)
+and one for [CWL tools](https://planemo.readthedocs.io/en/latest/writing_advanced_cwl.html#dependencies-and-conda)
 
 ---
 
@@ -50,6 +52,17 @@ The `--requirement seqtk@1.2` gets translated into the following Galaxy tool XML
 </requirements>
 ```
 
+And the following CWL software requirement hint:
+
+```yaml
+  hints:
+    SoftwareRequirement:
+      packages:
+      - package: seqtk
+        version:
+        - "1.2"
+```
+
 ---
 
 ## Dependency Resolution
@@ -84,11 +97,11 @@ Conda **recipes** build **packages** that are published to **channels**.
 
 class: enlarge120
 
-### .image-25[![](../../../../shared/images/conda_logo.png)] <br /> Conda Key Features for Galaxy
+### .image-25[![](../../../../shared/images/conda_logo.png)] <br /> Conda Key Features for Tool and Workflow Developers
 
 - No compilation at install time - *binaries* with their dependencies, libraries...
 
-- Support for all operating systems Galaxy targets
+- Support for multiple operating systems including Linux and Mac OS X
 
 - Easy to manage *multiple versions* of the same recipe
 
@@ -127,7 +140,7 @@ class: enlarge120
 
 - Packages through channels within Continuum.
 
-- Conda channels searched by Galaxy for packages
+- Conda channels searched for packages by default
     - iuc
     - bioconda
     - conda-forge
@@ -203,6 +216,28 @@ for package resolution.
 
 ---
 
+class: enlarge120
+
+## Conda and CWL
+
+Conda with cwltool (the reference runner):
+
+```sh
+cwltool --beta-conda-dependencies \ 
+        tests/seqtk_seq.cwl \
+        tests/seqtk_seq_job.json
+```
+
+Conda with Toil (a production CWL runner suitable for HPC):
+
+```sh
+cwltoil --beta-conda-dependencies \
+        tests/seqtk_seq.cwl \
+        tests/seqtk_seq_job.json
+```
+
+---
+
 class: enlarge150
 
 ## Conda and Planemo
@@ -214,10 +249,19 @@ Using Conda directly is generally package-centric, Planemo provides abstractions
 class: left, enlarge120
 
 The next few slides will use the seqtk example from Planemo's documentation - this can be downloaded to
-follow along using the following command:
+follow along using the following commands.
+
+Example Galaxy Project:
 
 ```bash
 $ planemo project_init --template=seqtk_complete seqtk_example
+$ cd seqtk_example
+```
+
+Example CWL Project:
+
+```bash
+$ planemo project_init --template=seqtk_complete_cwl seqtk_example
 $ cd seqtk_example
 ```
 
@@ -227,9 +271,7 @@ class: left
 
 ### Linting Conda Dependencies
 
-.enlarge120[Planemo can check if the requirements of a tool are available in best practice Conda channels using the `--conda_requirements` flag of `planemo lint`.]
-
-<br>
+Planemo can check if the requirements of a tool are available in best practice Conda channels using the `--conda_requirements` flag of `planemo lint`.
 
 ```bash
 $ planemo lint --conda_requirements seqtk_seq.xml
@@ -239,16 +281,23 @@ Applying linter requirements_in_conda... CHECK
 .. INFO: Requirement [seqtk@1.2] matches target in best practice Conda channel [bioconda].
 ```
 
-<br>
+or
 
-.enlarge120[*Notice Planemo indicates this tool is available and shows the channel it is available in.*]
+```bash
+$ planemo lint --conda_requirements seqtk_seq.cwl
+Linting tool /Users/john/workspace/planemo/docs/writing/seqtk_seq.cwl
+  ...
+Applying linter requirements_in_conda... CHECK
+.. INFO: Requirement [seqtk@1.2] matches target in best practice Conda channel [https://conda.anaconda.org/bioconda/osx-64].
+```
+
+*Notice Planemo indicates this tool is available and shows the channel it is available in.*
 
 ---
 
 class: left
 
 ### The Planemo `conda_install` command
-
 
 .reduce70[```sh
 $ planemo conda_install seqtk_seq.xml
@@ -274,8 +323,8 @@ $ which seqtk
 seqtk not found
 ```]
 
-Notice seqtk hasn't been placed on the `PATH`, an environment has been setup that Galaxy (when
-used through Planemo) can leverage.
+Notice seqtk hasn't been placed on the `PATH`, an environment has been setup that Planemo
+can leverage when running your tool.
 
 ---
 
@@ -284,13 +333,13 @@ class: enlarge120
 ### The Planemo `conda_env` command
 
 .reduce70[```sh
-$ . <(planemo conda_env seqtk_seq.xml)
+$ . &lt;(planemo conda_env seqtk_seq.cwl)
 Deactivate environment with conda_env_deactivate
 (seqtk_seq) $ which seqtk
 /home/planemo/miniconda2/envs/jobdepsiJClEUfecc6d406196737781ff4456ec60975c137e04884e4f4b05dc68192f7cec4656/bin/seqtk
 (seqtk_seq) $ seqtk seq
 
-Usage:   seqtk seq [options] <in.fq>|<in.fa>
+Usage:   seqtk seq [options] &lt;in.fq>|&lt;in.fa>
 
 Options: -q INT    mask bases with quality lower than INT [0]
          -X INT    mask bases with quality higher than INT [255]
@@ -352,6 +401,27 @@ The following line indicates the seqtk package was found:
 ]
 ---
 
+
+### Planemo `test`
+
+```sh
+$ $ planemo test --no-container seqtk_seq.cwl
+Enable beta testing mode for testing.
+cwltool INFO: /Users/john/workspace/planemo/.venv/bin/planemo 1.0.20170828135420
+cwltool INFO: Resolved '/Users/john/workspace/planemo/project_templates/seqtk_complete_cwl/seqtk_seq.cwl' to 'file:///Users/john/workspace/planemo/project_templates/seqtk_complete_cwl/seqtk_seq.cwl'
+cwltool INFO: [job seqtk_seq.cwl] /private/var/folders/78/zxz5mz4d0jn53xf0l06j7ppc0000gp/T/tmpaDQ1nK$ seqtk \
+    seq \
+    -a \
+    /private/var/folders/78/zxz5mz4d0jn53xf0l06j7ppc0000gp/T/tmpJtPKCr/stg24cf7e67-5ca6-44a4-a46b-26cbe104e1d4/2.fastq > /private/var/folders/78/zxz5mz4d0jn53xf0l06j7ppc0000gp/T/tmpaDQ1nK/out
+cwltool INFO: [job seqtk_seq.cwl] completed success
+cwltool INFO: Final process status is success
+galaxy.tools.parser.factory INFO: Loading CWL tool - this is experimental - tool likely will not function in future at least in same way.
+All 1 test(s) executed passed.
+seqtk_seq_0: passed
+```
+
+---
+
 ### <i class="fa fa-pencil" aria-hidden="true"></i> Hands-on
 
 ![](../../images/exercise.png)
@@ -361,7 +431,7 @@ The following line indicates the seqtk package was found:
 ### <i class="fa fa-pencil" aria-hidden="true"></i> Hands-on
 
 #### The Goal
-- Use the Planemo commands `conda_install`, `conda_env`, and `test` to practice the Galaxy tool dependency development lifecycle.
+- Use the Planemo commands `conda_install`, `conda_env`, and `test` to practice the tool dependency development lifecycle.
 
 ---
 
@@ -369,24 +439,28 @@ The following line indicates the seqtk package was found:
 
 #### Steps
 
-Run the following commands to practice working with Galaxy tools, Planemo, and Conda.
-
+Run the following commands to practice working with Galaxy or CWL tools, Planemo, and Conda.
 
 ```bash
 $ planemo project_init --template=seqtk_complete seqtk_example
 ```
+
 ```bash
 $ cd seqtk_example
 ```
+
 ```bash
 $ planemo conda_install seqtk_seq.xml
 ```
+
 ```bash
-$ . <(planemo conda_env seqtk_seq.xml)
+$ . &lt;(planemo conda_env seqtk_seq.xml)
 ```
+
 ```bash
 $ planemo test seqtk_seq.xml
 ```
+
 ---
 
 class: enlarge120
@@ -464,6 +538,7 @@ only one that will be used by Galaxy by default.
 
 1. Run the following commands to download an example tool to modify.
 ```sh
+$ planemo project_init --template conda_exercises_cwl conda_exercises # or
 $ planemo project_init --template conda_exercises conda_exercises
 $ cd conda_exercises/exercise1
 $ ls
@@ -733,12 +808,12 @@ See [Contributing with GitHub](../github-contribution/slides.html)
 
 ### Planemo and `--conda_use_local`
 
-By default, Galaxy and Planemo will ignore locally built packages.
+By default, Planemo (and by extension Galaxy and CWL runners) will ignore locally built packages.
 
 Simply pass `--conda_use_local` to various Planemo commands (e.g. `test`, `conda_install`, or `serve`) to use the local package
 cache.
 
-*Enables developing Galaxy tools and Conda recipes in parallel.*
+*Enables developing tools and Conda recipes in parallel.*
 
 ---
 
@@ -768,6 +843,8 @@ If you have completed `exercise1`, open `exercise2`.
 $ cd ../exercise2
 $ ls
 fleeqtk_seq.xml              test-data
+$ ls # or for CWL
+fleeqtk_seq.cwl       fleeqtk_seq_tests.yml test-data
 ```
 
 This directory contains the outline of a tool for [fleeqtk](https://github.com/jmchilton/fleeqtk). fleeqtk is a fork of the project seqtk that many Planemo tutorials are built around and the example tool `fleeqtk_seq.xml` should be fairly familiar.
@@ -781,13 +858,13 @@ class: left
 #### Steps
 
 1. Clone and branch Bioconda (https://github.com/bioconda/bioconda-recipes)
-2. Build a recipe for fleeqtk version 1.3. You may wish to use conda skeleton, start from scratch, or copy the recipe of seqtk and work from there - any of these strategies should work
+2. Build a recipe for fleeqtk version 1.3. You may wish to start from scratch or copy the recipe of seqtk and work from there - either of these strategies should work
   * fleeqtk 1.3 can be downloaded using the URL https://github.com/jmchilton/fleeqtk/archive/v1.3.tar.gz
   * fleeqtk can be built using `make` and installed with `make install`
 3. Use `conda build` to build the recipe
-4. Add a `requirement` for this new package in the example tool.
-5. Run `planemo conda_install --conda_use_local fleeqtk_seq.xml` to install the package for Galaxy
-6. Run `planemo test fleeqtk_seq.xml` to verify the tool and package work together
+4. Add a `requirement` (Galaxy) or `SoftwareRequirement` (CWL) for this new package in the example tool
+5. Run `planemo conda_install --conda_use_local fleeqtk_seq.xml` (or `.cwl`) to install the package
+6. Run `planemo test fleeqtk_seq.cwl` (or `.xml`) to verify the tool and package work together
 
 ---
 

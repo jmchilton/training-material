@@ -43,18 +43,6 @@ Also mention Galaxy KickStart as a way to run Galaxy itself in a container.
 
 ---
 
-## Containerizing Galaxy vs Tools
-
-We are going to discuss containerizing tool execution instead - executing just jobs in containers.
-
-Containers for the particular job's tool.
-
-However you deploy Galaxy, including in a container, tool execution can still be containerized.
-
-???
-
----
-
 class: left
 
 ### Containerizing Tools is Still Important
@@ -69,90 +57,31 @@ class: left
 
 class: left
 
-### Containerizing Tool Execution
-
-Decomposes to basic problems:
-
-* <i class="fa fa-square-o" aria-hidden="true"></i> Instruct Galaxy where to find a container for the tool.
-* <i class="fa fa-square-o" aria-hidden="true"></i> Instruct Galaxy to run the tool in a container.
-
----
-
-class: left
-
-### Configuring Galaxy to Use Containers
-
-Just configure the destination. For instance, transform the cluster destination:
-
-```
-<destination id="short_fast" runner="slurm">
-    <param id="nativeSpecification">--time=00:05:00 --nodes=1</param>
-</destination>
-```
-
-as follows:
-
-
-```
-<destination id="short_fast" runner="slurm">
-    <param id="nativeSpecification">--time=00:05:00 --nodes=1</param>
-    <param id="docker_enabled">true</parma>
-    <param id="docker_sudo">false</param>
-</destination>
-```
-
-That is it!
-
-For development, the Planemo flag `--docker` does this for `test`, `serve`, and related commands.
-
----
-
-class: left
-
-### Containerizing Tool Execution
-
-#### Decomposes to basic problems
-
-* <i class="fa fa-square-o" aria-hidden="true"></i> Instruct Galaxy where to find a container for the tool.
-* <i class="fa fa-check-square-o" aria-hidden="true"></i> Instruct Galaxy to run the tool in a container.
-
----
-
-class: left
-
 ## Explicit Container Dependencies
 
-Returning to the seqtk example, lets change the `requirements` from:
+Returning to the seqtk example:
 
-```
+```xml
 <requirements>
+    <container type="docker">dukegcb/seqtk</container>
     <requirement type="package" version="1.2">seqtk</requirement>
 </requirements>
 ```
 
-into
+or 
 
-```
-<requirements>
-    <container type="docker">quay.io/biocontainers/seqtk:1.2--1</container>
-    <requirement type="package" version="1.2">seqtk</requirement>
-</requirements>
+```yaml
+hints:
+  DockerRequirement:
+    dockerPull: dukegcb/seqtk
+  SoftwareRequirement:
+    packages:
+    - package: seqtk
+      version:
+      - "1.2"
 ```
 
 Now run Planemo `test` and `serve` with the `--docker` flag and as a tool developer you are done!
-
----
-
-### Containerizing Tool Execution
-
-#### Decomposes to basic problems
-
-* <i class="fa fa-check-square-o" aria-hidden="true"></i> Instruct Galaxy where to find a container for the tool.
-* <i class="fa fa-check-square-o" aria-hidden="true"></i> Instruct Galaxy to run the tool in a container.
-
-We're done... right?
-
-???
 
 ---
 
@@ -161,7 +90,7 @@ class: left
 ## The Problems with Making Docker Explicit
 
 * Setting up a `Dockerfile` and publishing a Docker image more process for the tool even though the dependencies have already been completely defined.
-* An arbitrary Docker image is a blackbox and there is no guarantee Galaxy will execute the same binaries as the Conda requirements.
+* An arbitrary Docker image is a blackbox and there is no guarantee Galaxy/CWL will execute the same binaries as the Conda requirements.
 
 ---
 
@@ -171,15 +100,24 @@ class: left
 
 This:
 
-```
+```xml
 <requirements>
     <requirement type="package" version="1.2">seqtk</requirement>
 </requirements>
 ```
 
-should have been sufficient!
+or
 
-And the good news is that now it is (mostly)!
+```yaml
+hints:
+  SoftwareRequirement:
+    packages:
+    - package: seqtk
+      version:
+      - "1.2"
+```
+
+should have been sufficient!
 
 ---
 
@@ -187,12 +125,19 @@ class: left
 
 ### .image-10[![](../../images/biocontainers.png)] BioContainers - The Magic
 
-Galaxy can now automatically find or build containers for best practice tools.
+Galaxy and cwltool/Toil can now automatically find or build containers for best practice tools.
 
 Planemo will check if such a container has been published with the `--biocontainers` flag to `planemo lint`.
 
-```
+```shell
 $ planemo lint --biocontainers seqtk_seq.xml
+...
+Applying linter biocontainer_registered... CHECK
+.. INFO: BioContainer best-practice container found [quay.io/biocontainers/seqtk:1.2--1].
+```
+
+```shell
+$ planemo lint --biocontainers seqtk_seq.cwl
 ...
 Applying linter biocontainer_registered... CHECK
 .. INFO: BioContainer best-practice container found [quay.io/biocontainers/seqtk:1.2--1].
@@ -285,20 +230,7 @@ TODO: Zoom in on the image a bit more ideally.
 Galaxy can be configured to attempt to build containers on demand for containers that haven't
 been published to the BioContainers namespace on quay.io.
 
-These containers will have same names as would be published to quay.io (e.g. `quay.io/biocontainers/seqtk:1.2--0`).
-
----
-
-### Containerizing Tool Execution
-
-#### Decomposes to basic problems
-
-* <i class="fa fa-check-square-o" aria-hidden="true"></i><i class="fa fa-check-square-o" aria-hidden="true"></i> Instruct Galaxy where to find a container for the tool.
-* <i class="fa fa-check-square-o" aria-hidden="true"></i> Instruct Galaxy to run the tool in a container.
-
-We're done this time now right?
-
-???
+These containers will have same names as would be published to quay.io (e.g. `quay.io/biocontainers/seqtk:1.2--1`).
 
 ---
 
@@ -325,6 +257,10 @@ bwa_and_samtools.xml:        <requirement type="package" version="0.7.15">bwa</r
 bwa_and_samtools.xml:        <requirement type="package" version="1.3.1">samtools</requirement>
 bwa_and_samtools.xml:    </requirements>
 ```]
+
+???
+
+TODO: CWL
 
 ---
 
@@ -435,6 +371,8 @@ This built `quay.io/biocontainers/mulled-v2-fe8faa35dbf6dc65a0f7f5d4ea12e31a79f7
 
 ???
 
+TODO: cwl
+
 ---
 
 class: reduce70
@@ -503,12 +441,13 @@ class: left
 - Run through the bwa_and_samtools.xml test tool and verify container creation.
 
 ```
+$ planemo project_init --project_template=conda_testing_cwl conda_testing # CWL
 $ planemo project_init --project_template=conda_testing conda_testing
 $ cd conda_testing/
-$ planemo mull bwa_and_samtools.xml
+$ planemo mull bwa_and_samtools.[xml|cwl]
 $ docker images # verify the container was built
 $ # use docker run to verify the container has samtools and bwa.
-$ planemo test --biocontainers bwa_and_samtools.xml
+$ planemo test --biocontainers bwa_and_samtools.[xml|cwl]
 ```
 
 ---
