@@ -7,8 +7,8 @@ logo: "GTN"
 
 ## Planemo
 
-These slides mirror the section on "Dependencies and Conda" in the Planemo documentation,
-there are two versions of the that documentation - one for [Galaxy XML tools](https://planemo.readthedocs.io/en/latest/writing_advanced.html#dependencies-and-conda)
+These slides mirror the section on "Dependencies and Conda" in the Planemo documentation.
+There are two versions of that documentation - one for [Galaxy XML tools](https://planemo.readthedocs.io/en/latest/writing_advanced.html#dependencies-and-conda)
 and one for [CWL tools](https://planemo.readthedocs.io/en/latest/writing_advanced_cwl.html#dependencies-and-conda)
 
 ---
@@ -140,7 +140,7 @@ class: enlarge120
 
 - Packages through channels within Continuum.
 
-- Conda channels searched for packages by default
+- Conda channels searched for packages by default (ordered)
     - iuc
     - bioconda
     - conda-forge
@@ -150,7 +150,7 @@ class: enlarge120
 <br/>
 <br/>
 
-.footnote[If you are interested in Natural Language Processing or Cheminformatics you may be asking if these channels can still work for your tools. Despite the name [Bioconda](https://bioconda.github.io/) - it is really more about community and a set of best practices than about bioinformatics purity - many diverse packages have been integrated.]
+.footnote[If you are interested in Natural Language Processing or Cheminformatics you may be asking if these channels can still work for your tools. Despite the name [Bioconda](https://bioconda.github.io/) - it is really more about community and a set of best practices than about domain purity - many diverse packages have been integrated.]
 
 ---
 
@@ -165,7 +165,7 @@ $ which conda
 /Users/john/miniconda3/bin/conda
 ```
 
-Planemo installs Conda using miniconda and configured defaults designed to easy development.
+Planemo installs Conda using miniconda and configured defaults designed for easy development.
 
 This has already been done on [Planemo machine](https://github.com/galaxyproject/planemo-machine).
 
@@ -223,7 +223,7 @@ class: enlarge120
 Conda with cwltool (the reference runner):
 
 ```sh
-cwltool --beta-conda-dependencies \ 
+cwltool --beta-conda-dependencies \
         tests/seqtk_seq.cwl \
         tests/seqtk_seq_job.json
 ```
