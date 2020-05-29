@@ -68,6 +68,10 @@ Contribution guidelines: https://bit.ly/gx-CONTRIBUTING-md
 
 ## The **/galaxyproject** projects
 
+*The social architecture of the ecosystem.*
+
+???
+
 Too many to cover all but we'll cover some of the big ones in a few big
 categories. User-facing applications, projects for Galaxy plugin developers,
 and projects for Galaxy administrators.
@@ -221,7 +225,39 @@ class: white
 
 ---
 
+## Putting it all together
+
+![](../../images/galaxy_main_scheme.png)
+
+---
+[galaxyproject/**galaxy** ](https://github.com/galaxyproject/galaxy)
+
+The core project - backend, frontend, other webapps (e.g. the ToolShed).
+The rest of the slides will be about this repository.
+
+---
+
+## Project Management
+
+*The social architecture of the project.*
+
+---
+
+Pull requests, branches.
+
+---
+
+Committers, policies.
+
+---
+
+Code of conduct.
+
+---
+
 ## Principles
+
+*The guiding principles of the core code architecture.*
 
 ---
 
@@ -249,9 +285,9 @@ flexibility is paramount.
 - Consistent colors, fonts, themes, etc...
 - Reusable components for presenting common widgets - from the generic (forms and grids) to the specific (tools and histories).
 - Tied to specific technologies:
-  - JavaScript driven
-  - Backbone for MVC
-  - webpack & RequireJS for modules
+  - Implemented JavaScript (ES6)
+  - Built with Webpack
+  - VueJS for component definitions
 
 ---
 
@@ -260,11 +296,11 @@ flexibility is paramount.
 Galaxy's backend is in many ways driven by *pluggable interfaces* and
 can be adapted to many different technologies.
 
-- SQLAlchemy allows using sqlite, postgres, or MySQL for a database.
+- SQLAlchemy allows using sqlite, postgres, or MySQL (sort of) for a database.
 - Many different cluster backends or job managers are supported.
 - Different frontend proxies (e.g. nginx) are supported as well as web
   application containers (e.g. uWSGI).
-- Different storage strategies and technologies are supported (e.g. S3).
+- Different storage strategies and technologies are supported (e.g. S3, iRODs).
 - Tool definitions, job metrics, stat middleware, tool dependency resolution, workflow modules,
   datatype definitions are all plugin driven.
 
@@ -290,57 +326,79 @@ So by default Galaxy does not require:
 
 ---
 
-## Web Frameworks
+### In other words...
+
+The Galaxy frontend is architected with the bench scientist in mind first and foremost,
+the Galaxy backend is architected with Galaxy administrators in mind first and foremost.
 
 ---
 
-![Client-Server Communications](../../images/server_client.plantuml.svg)
+## Files and Directory
 
-???
-
-Workflow, Data Libraries, Visualization, History, Tool Menu,
-Many Grids, User and preference management.
+*The physical architecture of the Galaxy code.*
 
 ---
 
-class: white
+### Project Docs
 
-![Backbone MVC](../../images/backbone-model-view.svg)
-
-### Backbone MVC
+![Project Files](../../images/core_files_project_docs.plantuml.svg)
 
 ---
 
-![Client-Server Communications (old)](../../images/server_client_old.plantuml.svg)
-
-???
-
-Admin things, Reports and Tool Shed Web app
+### Client Files
 
 ---
 
-![WSGI Application](../../images/wsgi_app.svg)
+### Test Sources
 
-### Galaxy WSGI
+---
+
+### Continuous Integration
+
+---
+
+### Two Views of the Backend
+
+---
+
+## Web Frameworks 
+
+*The architecture of an interaction.*
+
+---
+
+class: reduce70
+
+![Client-Server Communications](../../images/server_client_vuejs.plantuml.svg)
+
+Bits and pieces of older client technologies appear throughout - ranging from Python
+mako templates to generate HTML, lower-level jQuery, and lots of Backbone legacy MVC.
+
+---
+
+![Processing requests on the server](../../images/wsgi_app.plantuml.svg)
+
+Expanding the right side of that diagram. We will move through the component left to right.
 
 ---
 
 ### WSGI
 
 - Python interface for web servers defined by PEP 333 - https://www.python.org/dev/peps/pep-0333/.
-- Galaxy moving from Paster to uWSGI to host the application.
-  - https://bitbucket.org/ianb/paste
-  - https://uwsgi-docs.readthedocs.io/
+- Galaxy tends to favor uWSGI, but other options such as Gunicorn and Paste can be used to host the application.
+  - https://uwsgi-docs.readthedocs.io/ (a million bells and whistles, highly performant, a bit brittle)
+  - https://gunicorn.org/ (simpler, more standard Python 3 WSGI server)
+  - https://bitbucket.org/ianb/paste (more of legacy interest, but still heavily used in testing for instance)
 
 ---
 
-![WSGI Request](../../images/wsgi_request.svg)
+![Processing requests on the server](../../images/wsgi_app.plantuml.svg)
 
 ---
 
 template: left-aligned
 
-### Galaxy WSGI Middleware
+### WSGI Middleware
 
 A WSGI function:
 
@@ -368,6 +426,22 @@ Middleware configured in `galaxy.webapps.galaxy.buildapp#wrap_in_middleware`.
 - `galaxy.web.framework.middleware.request_id#RequestIDMiddleware`
 
 ---
+
+![Processing requests on the server](../../images/wsgi_app.plantuml.svg)
+
+---
+
+Describe web application role.
+
+---
+
+### Classes
+
+![GalaxyWebApplication class diagram](../../images/webapp_classes.plantuml.svg)
+
+---
+
+### Instances
 
 ![webapp](../../images/webapp.plantuml.svg)
 
@@ -426,6 +500,10 @@ def handle_request(self, environ, start_response):
     body = method( trans, **kwargs )
     # Body may be a file, string, etc... respond with it.
 ```
+
+---
+
+### Why not just Django?
 
 ---
 
@@ -1440,5 +1518,46 @@ This used to be an important detail - but uWSGI makes things a lot easier.
 ---
 
 ## Q & A
+
+---
+
+---
+
+### Legacy Client Architecture
+
+???
+
+Still some backbone and templates here and there, might be better to drop though?
+
+---
+
+![Client-Server Communications](../../images/server_client.plantuml.svg)
+
+???
+
+Workflow, Data Libraries, Visualization, History, Tool Menu,
+Many Grids, User and preference management.
+
+---
+
+class: white
+
+![Backbone MVC](../../images/backbone-model-view.svg)
+
+### Backbone MVC
+
+---
+
+![Client-Server Communications (old)](../../images/server_client_old.plantuml.svg)
+
+???
+
+Admin things, Reports and Tool Shed Web app
+
+---
+
+![WSGI Application](../../images/wsgi_app.svg)
+
+### Galaxy WSGI
 
 ---
