@@ -19,7 +19,7 @@ When something goes wrong in Galaxy, there are a number of things you can do to 
 3. **Check the logs.** Output (stdout) and error logs (stderr) of the tool are available:
    - Expand the history item
    - Click on the {% icon details %} icon
-   - Scroll down to the **Job Information** section to view the 2 logs:
+   - Scroll down to the **Job Execution Details** section to view the 2 logs:
      - Tool Standard Output
      - Tool Standard Error
    - For more information about specific tool errors, please see the [Troubleshooting section]({% link faqs/galaxy/index.md %}#troubleshooting)

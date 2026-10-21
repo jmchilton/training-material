@@ -30,9 +30,9 @@ The people who provide support for Galaxy are largely volunteers in this communi
 > Here is everything that I know:
 >
 > - The dataset is green, the job did not fail
-> - This is the standard output/error of the tool that I found in the information page (insert it here)
+> - This is the standard output/error of the tool that I found in the **Job Execution Details** of the dataset details page (insert it here)
 > - I have read it but I do not understand what X/Y means.
-> - The job ID from the output information page is 123123abdef.
+> - The job ID from the **Job Execution Details** of the dataset details page is 123123abdef.
 > - I tried re-running the job and changing parameter Z but it did not change the result.
 >
 > Could you help me?
